@@ -1,6 +1,6 @@
 # QVAL - GPU-Accelerated Function Evaluator and Optimizer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Platform Support](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)](https://github.com)
 [![GPU Acceleration](https://img.shields.io/badge/acceleration-OpenCL%20GPU-green)](https://www.khronos.org/opencl/)
 
@@ -138,9 +138,6 @@ evaluate:
 util/run_all_tests.sh
 ```
 
-### Building from Source
-See [BUILDING.md](BUILDING.md) for detailed build instructions.
-
 ## 📖 Documentation
 
 - **[User Manual](bin/doc/manual.md)** - Comprehensive usage guide
@@ -169,7 +166,12 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+QVAL is available under a dual license:
+
+- **Personal, Academic, and Research Use**: Free under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+- **Commercial Use**: Requires a separate commercial license. Contact mdx1358@github.com for commercial licensing terms.
+
+See the [LICENSE](LICENSE) file for complete terms.
 
 ## 🙏 Acknowledgments
 
