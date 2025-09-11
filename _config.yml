@@ -1,0 +1,90 @@
+# GitHub Pages configuration for QVAL
+title: QVAL - GPU-Accelerated Function Evaluator and Optimizer
+description: High-performance, GPU-accelerated function evaluator and optimizer for parallel parameter space exploration
+url: "https://mdx1358.github.io"
+baseurl: "/qval"
+
+# Theme
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# GitHub metadata
+github:
+  repository_url: "https://github.com/mdx1358/qval"
+  repository_nwo: "mdx1358/qval"
+
+# Author information
+author:
+  name: "QVAL Development Team"
+  email: "contact@example.com"
+
+# Social links
+social_links:
+  github: "mdx1358"
+
+# Navigation
+header_pages:
+  - examples.md
+  - manual.md
+  - downloads.md
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+incremental: false
+
+# Collections
+collections:
+  examples:
+    output: true
+    permalink: /:collection/:name/
+
+# Include/exclude
+include:
+  - _pages
+  - bin/web
+  - config/example
+  - config/tutorial
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - build/
+  - cmake-build-debug/
+  - .idea/
+  - "*.o"
+  - "*.so"
+  - "*.dylib"
+  - "*.dll"
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+  - scope:
+      path: "_examples"
+      type: "examples"
+    values:
+      layout: "example"
+
+# Custom variables
+qval:
+  version: "1.0.0"
+  release_date: "2025-09-11"
+  platforms:
+    - name: "macOS"
+      arch: "Universal (Intel & Apple Silicon)"
+      download_url: "https://github.com/mdx1358/qval/releases/latest/download/qval-macos.zip"
+    - name: "Windows"
+      arch: "x64"
+      download_url: "https://github.com/mdx1358/qval/releases/latest/download/qval-windows-x64.zip"
