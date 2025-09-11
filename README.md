@@ -1,7 +1,7 @@
 # QVAL - GPU-Accelerated Function Evaluator and Optimizer
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
-[![Platform Support](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)](https://github.com)
+[![Platform Support](https://img.shields.io/badge/platform-macOS%20(Apple%20Silicon)-blue)](https://github.com)
 [![GPU Acceleration](https://img.shields.io/badge/acceleration-OpenCL%20GPU-green)](https://www.khronos.org/opencl/)
 
 QVAL is a high-performance, GPU-accelerated function evaluator and optimizer designed for parallel exploration of parameter spaces. It leverages GPU parallelism to evaluate thousands to millions of parameter combinations simultaneously, making it ideal for optimization problems, parameter sweeps, and Monte Carlo simulations.
@@ -15,7 +15,7 @@ QVAL is a high-performance, GPU-accelerated function evaluator and optimizer des
 - **Multi-Objective Support**: Weighted sum aggregation for multiple objectives
 - **Rich Parameter Types**: Scalars, multi-dimensional arrays, and various probability distributions
 - **Comprehensive I/O**: CSV/XLSX input/output with customizable report generation
-- **Cross-Platform**: Native support for macOS and Windows
+- **Cross-Platform**: Native support for macOS (Apple Silicon), Windows support coming soon
 
 ## 📊 Why GPU Parallelism Matters
 
@@ -36,8 +36,8 @@ QVAL is a high-performance, GPU-accelerated function evaluator and optimizer des
 
 ### Installation
 Download the pre-built binaries for your platform:
-- [macOS (Apple Silicon & Intel)](https://github.com/mdx1358/qval/releases/latest)
-- [Windows (x64)](https://github.com/mdx1358/qval/releases/latest)
+- [macOS (Apple Silicon)](https://github.com/mdx1358/qval/releases/latest) - Available now
+- [Windows (x64)](https://github.com/mdx1358/qval/releases/latest) - Coming in a few days
 
 ### Basic Usage
 
@@ -155,7 +155,7 @@ Visit our [project website](https://mdx1358.github.io/qval/) for:
 
 ## 📋 System Requirements
 
-- **Operating System**: macOS 10.14+, Windows 10+
+- **Operating System**: macOS 10.14+ (Apple Silicon), Windows 10+ (coming soon)
 - **GPU**: OpenCL 1.2+ compatible device (NVIDIA, AMD, Intel, Apple Silicon)
 - **Memory**: 4GB+ RAM recommended for large-scale evaluations
 - **Storage**: 500MB+ available space

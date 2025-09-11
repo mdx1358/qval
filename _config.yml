@@ -83,8 +83,8 @@ qval:
   release_date: "2025-09-11"
   platforms:
     - name: "macOS"
-      arch: "Universal (Intel & Apple Silicon)"
-      download_url: "https://github.com/mdx1358/qval/releases/latest/download/qval-macos.zip"
+      arch: "Apple Silicon (ARM64)"
+      download_url: "https://github.com/mdx1358/qval/releases/latest/download/qval-macos-arm64.zip"
     - name: "Windows"
-      arch: "x64"
-      download_url: "https://github.com/mdx1358/qval/releases/latest/download/qval-windows-x64.zip"
+      arch: "x64 (Coming Soon)"
+      download_url: "#"

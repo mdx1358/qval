@@ -16,7 +16,7 @@ QVAL is a high-performance, GPU-accelerated function evaluator and optimizer des
 - **Multi-Objective Support**: Weighted sum aggregation for multiple objectives
 - **Rich Parameter Types**: Scalars, multi-dimensional arrays, and various probability distributions
 - **Comprehensive I/O**: CSV/XLSX input/output with customizable report generation
-- **Cross-Platform**: Native support for macOS, Linux, and Windows
+- **Cross-Platform**: Native support for macOS (Apple Silicon), Windows support coming soon
 
 ## 🔄 How It Works
 
@@ -129,7 +129,7 @@ evaluate:
 
 ## 📋 System Requirements
 
-- **Operating System**: macOS 10.14+, Windows 10+
+- **Operating System**: macOS 10.14+ (Apple Silicon), Windows 10+ (coming soon)
 - **GPU**: OpenCL 1.2+ compatible device (NVIDIA, AMD, Intel, Apple Silicon)
 - **Memory**: 4GB+ RAM recommended for large-scale evaluations
 - **Storage**: 500MB+ available space
