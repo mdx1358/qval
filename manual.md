@@ -3,9 +3,9 @@ layout: default
 title: Manual
 ---
 
-<main style="padding: 6rem 0; background: linear-gradient(180deg, var(--bg-color) 0%, var(--card-bg) 100%);">
+<main style="padding: 6rem 0; background: linear-gradient(180deg, var(--bg-color) 0%, var(--card-bg) 100%); color: var(--text-color);">
   <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem;">
-    
+
 # QVAL Manual
 
 Complete user documentation for QVAL - GPU-accelerated function evaluator and optimizer.
