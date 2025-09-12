@@ -1,10 +1,7 @@
 ---
-layout: default
+layout: page
 title: Examples
 ---
-
-<main style="padding: 6rem 0; background: linear-gradient(180deg, var(--bg-color) 0%, var(--card-bg) 100%); color: var(--text-color);">
-  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem;" markdown="1">
 
 # Real-world Examples
 
@@ -336,5 +333,3 @@ evaluate:
 - Check out [config/tutorial/](https://github.com/mdx1358/qval/tree/main/config/tutorial) for step-by-step tutorials
 - Review [config/test/](https://github.com/mdx1358/qval/tree/main/config/test) for validation examples
 
-  </div>
-</main>

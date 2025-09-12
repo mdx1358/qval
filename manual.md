@@ -1,10 +1,7 @@
 ---
-layout: default
+layout: page
 title: Manual
 ---
-
-<main style="padding: 6rem 0; background: linear-gradient(180deg, var(--bg-color) 0%, var(--card-bg) 100%); color: var(--text-color);">
-  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem;" markdown="1">
 
 # QVAL Manual
 
@@ -588,5 +585,3 @@ Warning: Double precision not supported, falling back to float32
 - **Review manual sections** for specific features
 - **Examine generated `build_error.log`** for compilation issues
 
-  </div>
-</main>
