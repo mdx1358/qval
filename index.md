@@ -128,7 +128,13 @@ output/tutorial/00_minimal/code/eval.cl</code></pre>
       <div class="container">
         <h2 id="contact-heading" class="gradient-text">Contact</h2>
         <div class="feature-card">
-          <p>For inquiries, email: <a href="mailto:mdx1358@fastmail.com">mdx1358@fastmail.com</a></p>
+          <h3>Get in Touch</h3>
+          <p>For inquiries, email: <a href="mailto:mdx1358@fastmail.com" style="color: var(--primary-light);">mdx1358@fastmail.com</a></p>
+        </div>
+        <div class="feature-card">
+          <h3>Source Code</h3>
+          <p>QVAL is open source. View the code, report issues, or contribute:</p>
+          <p><a href="https://github.com/mdx1358/qval" style="color: var(--primary-light); font-weight: 600;" target="_blank">📚 GitHub Repository</a></p>
         </div>
       </div>
     </section>
