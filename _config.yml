@@ -5,7 +5,7 @@ url: "https://mdx1358.github.io"
 baseurl: "/qval"
 
 # Theme
-theme: minima
+# theme: minima  # Disabled to use custom layout
 plugins:
   - jekyll-feed
   - jekyll-sitemap

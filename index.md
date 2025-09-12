@@ -3,210 +3,133 @@ layout: default
 title: Home
 ---
 
-# QVAL - GPU-Accelerated Function Evaluator and Optimizer
+<header class="hero" role="banner">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="gradient-text animate-on-scroll">QVAL</h1>
+        <h2 class="animate-on-scroll">Evaluate formulas and find the best parameters — fast.</h2>
+        <p class="hero-description animate-on-scroll">Write a simple YAML file, point to your CSV data, and QVAL runs your expression thousands of times on your GPU (or on an OpenCL CPU runtime when available). It then reports the best results and saves everything neatly to an output folder.</p>
+        <div class="hero-badges" role="complementary">
+          <span class="badge">No code</span>
+          <span class="badge">YAML</span>
+          <span class="badge">CSV/XLSX</span>
+          <span class="badge">GPU</span>
+        </div>
+        <div class="download-buttons" style="margin-top: 1.5rem;" id="downloads">
+          <a href="https://github.com/mdx1358/qval/releases/latest/download/qval-macos-arm64.zip" class="download-btn download-btn-mac" data-track="download-mac">
+            <span class="download-icon">⬇</span> Download QVAL for macOS
+          </a>
+          <a href="#" class="download-btn download-btn-win" data-track="download-win" style="opacity: 0.6; cursor: not-allowed;">
+            <span class="download-icon">⬇</span> Windows (Coming Soon)
+          </a>
+        </div>
+        <div class="download-buttons" style="margin-top: 0.75rem;">
+          <a href="#quickstart" class="link-btn">Read Quick Start</a>
+        </div>
+      </div>
+    </div>
+  </header>
 
-QVAL is a high-performance, GPU-accelerated function evaluator and optimizer designed for parallel exploration of parameter spaces. It leverages GPU parallelism to evaluate thousands to millions of parameter combinations simultaneously, making it ideal for optimization problems, parameter sweeps, and Monte Carlo simulations.
+  <main>
+    <section id="features" class="features" aria-labelledby="features-heading">
+      <div class="container">
+        <h2 id="features-heading" class="gradient-text">Key Features</h2>
+        <div class="feature-card">
+          <h3>Simple configs</h3>
+          <p>Describe your formula and parameters in a small YAML file. No code changes needed.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Your data: CSV/XLSX</h3>
+          <p>Read inputs from CSV or Excel (XLSX) by column name or index. Get clear CSV/XLSX reports out.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Fast on your machine</h3>
+          <p>Runs on your GPU when available; can run on CPU when an OpenCL CPU runtime (e.g., POCL) is installed.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Clear results</h3>
+          <p>Top results table, summary stats, and saved kernel/code for traceability (CSV and XLSX outputs).</p>
+        </div>
+        <div class="feature-card">
+          <h3>Flexible sampling</h3>
+          <p>Random, Sobol, LHS, or Halton — choose what works best without complexity.</p>
+        </div>
+      </div>
+    </section>
 
-## 🚀 Key Features
+    <section id="how-it-works" class="features" aria-labelledby="how-heading">
+      <div class="container">
+        <h2 id="how-heading" class="gradient-text">How it works</h2>
+        <div class="quickstart-steps">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <h3>Define a config</h3>
+            <p>Write a small YAML: expr, goal (min/max), samples, top_k, and params.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <h3>Load your data</h3>
+            <p>Point to CSV/XLSX columns by name or index, or use constants. Per-parameter or global.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <h3>Sample variations</h3>
+            <p>Generate candidates using RNG, Sobol, LHS, or Halton to explore the parameter space.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <h3>Compute</h3>
+            <p>QVAL builds an OpenCL kernel for your expression and evaluates all variations on the device.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">5</div>
+            <h3>Score & output</h3>
+            <p>Built-ins reduce vectors; scores are ranked; top_k saved to output/&lt;mirror&gt;/{report,code,log}.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-- **GPU-Accelerated Performance**: Parallel evaluation of up to millions of parameter combinations using OpenCL
-- **Flexible Expression Engine**: Define objectives using simple math expressions or advanced C-like OpenCL code  
-- **Multiple Sampling Strategies**: LHS, Halton sequences, Sobol sequences, and uniform random sampling
-- **Advanced Optimizers**: Cross-Entropy Method (CEM) and Differential Evolution (DE) built-in
-- **Multi-Objective Support**: Weighted sum aggregation for multiple objectives
-- **Rich Parameter Types**: Scalars, multi-dimensional arrays, and various probability distributions
-- **Comprehensive I/O**: CSV/XLSX input/output with customizable report generation
-- **Cross-Platform**: Native support for macOS (Apple Silicon), Windows support coming soon
+    <section id="quickstart" class="features" aria-labelledby="qs-heading">
+      <div class="container">
+        <h2 id="qs-heading" class="gradient-text">Quick Start</h2>
+        <div class="quickstart-steps">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <h3>Download & unzip</h3>
+            <p>Grab the build for your OS and unzip.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <h3>Run an example</h3>
+            <details class="example-detail">
+              <summary>Show commands</summary>
+              <pre class="code-clip"><code class="language-bash"># macOS/Linux
+./run_basic_example.sh
+# Windows
+run_basic_example.bat</code></pre>
+            </details>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <h3>Open the results</h3>
+            <details class="example-detail">
+              <summary>Where to look</summary>
+              <pre class="code-clip"><code class="language-text">output/tutorial/00_minimal/report/report.txt
+output/tutorial/00_minimal/code/eval.cl</code></pre>
+            </details>
+          </div>
+        </div>
+        <p class="note">CPU execution requires an OpenCL CPU runtime (e.g., POCL). Without it, only GPU devices are used.</p>
+      </div>
+    </section>
 
-## 🔄 How It Works
-
-<div class="steps-container">
-  <div class="step-card">
-    <h3>1. Define Problem</h3>
-    <p>Write your optimization problem in simple YAML configuration with math expressions</p>
-  </div>
-  <div class="step-card">
-    <h3>2. Choose Strategy</h3>
-    <p>Select sampling method (LHS, Sobol, Halton) and optimizer (CEM, DE) for your use case</p>
-  </div>
-  <div class="step-card">
-    <h3>3. Run on GPU</h3>
-    <p>QVAL compiles and executes massively parallel evaluations on your GPU hardware</p>
-  </div>
-  <div class="step-card">
-    <h3>4. Get Results</h3>
-    <p>Receive optimized parameters with comprehensive reports and analysis</p>
-  </div>
-</div>
-
-## 📊 Why GPU Parallelism Matters
-
-- **Massive Throughput**: Evaluate 100K-1M+ parameter combinations in parallel
-- **Fast Convergence**: Keep wall-clock time low by utilizing all GPU cores simultaneously  
-- **Scalable Sampling**: High-performance sampling algorithms optimized for parallel execution
-- **Real-time Optimization**: Quick iteration cycles for parameter tuning and exploration
-
-## 💾 Downloads
-
-<div class="downloads-section">
-  <div class="download-buttons">
-    <a href="{{ site.qval.platforms[0].download_url }}" class="download-btn macos">
-      <div class="platform">macOS</div>
-      <div class="arch">{{ site.qval.platforms[0].arch }}</div>
-    </a>
-    <a href="{{ site.qval.platforms[1].download_url }}" class="download-btn windows">
-      <div class="platform">Windows</div>  
-      <div class="arch">{{ site.qval.platforms[1].arch }}</div>
-    </a>
-  </div>
-  <p class="version-info">Latest Version: {{ site.qval.version }} • Released: {{ site.qval.release_date }}</p>
-</div>
-
-## 🔧 Quick Start
-
-1. **List available GPU devices:**
-   ```bash
-   # macOS
-   ./qval --list-devices
-   
-   # Windows (PowerShell)
-   .\qval.exe --list-devices
-   ```
-
-2. **Run a simple optimization:**
-   ```bash
-   # macOS
-   ./qval --config config/example/basic/basic.yaml
-   
-   # Windows (PowerShell)
-   .\qval.exe --config config\example\basic\basic.yaml
-   ```
-
-3. **Generate reports:**
-   ```bash
-   ./qval --config config/tutorial/00_minimal/00_minimal.yaml --report txt,md,html
-   ```
-
-## 📝 Simple Configuration Example
-
-```yaml
-evaluate:
-  expr: "X^2 + Y^2"  # Minimize sum of squares
-  samples: 10000     # Parallel evaluations
-  top_k: 10          # Best results to return
-  goal: min          # Minimize objective
-  sampler: lhs       # Latin Hypercube Sampling
-  
-  params:
-    - name: X
-      type: float
-      dist: uniform
-      min: -5.0
-      max: 5.0
-      per_variation: true
-      
-    - name: Y
-      type: float
-      dist: uniform
-      min: -5.0
-      max: 5.0
-      per_variation: true
-```
-
-## 🎯 Use Cases
-
-- **Engineering Optimization**: Design parameter optimization, system tuning
-- **Financial Modeling**: Portfolio optimization, risk analysis, pricing models
-- **Scientific Computing**: Parameter estimation, sensitivity analysis, Monte Carlo simulations
-- **Machine Learning**: Hyperparameter optimization, architecture search
-- **Signal Processing**: Filter design, algorithm parameter tuning
-
-## 📖 Documentation
-
-- **[Examples](examples.html)** - Real-world usage examples and tutorials
-- **[Manual](manual.html)** - Complete user documentation
-- **[GitHub Repository]({{ site.github.repository_url }})** - Source code and issues
-
-## 📋 System Requirements
-
-- **Operating System**: macOS 10.14+ (Apple Silicon), Windows 10+ (coming soon)
-- **GPU**: OpenCL 1.2+ compatible device (NVIDIA, AMD, Intel, Apple Silicon)
-- **Memory**: 4GB+ RAM recommended for large-scale evaluations
-- **Storage**: 500MB+ available space
-
-<style>
-.steps-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin: 30px 0;
-}
-
-.step-card {
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  text-align: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.step-card h3 {
-  color: #2c3e50;
-  margin-bottom: 10px;
-  font-size: 1.1em;
-}
-
-.downloads-section {
-  text-align: center;
-  margin: 40px 0;
-  padding: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  color: white;
-}
-
-.download-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.download-btn {
-  display: inline-block;
-  padding: 15px 25px;
-  background: white;
-  color: #333;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: transform 0.2s, box-shadow 0.2s;
-  min-width: 120px;
-  text-align: center;
-}
-
-.download-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  text-decoration: none;
-  color: #333;
-}
-
-.download-btn .platform {
-  font-size: 1.1em;
-  margin-bottom: 5px;
-}
-
-.download-btn .arch {
-  font-size: 0.9em;
-  color: #666;
-  font-weight: normal;
-}
-
-.version-info {
-  font-size: 0.9em;
-  opacity: 0.9;
-  margin: 0;
-}
-</style>
+    <section id="contact" class="features" aria-labelledby="contact-heading">
+      <div class="container">
+        <h2 id="contact-heading" class="gradient-text">Contact</h2>
+        <div class="feature-card">
+          <p>For inquiries, email: <a href="mailto:support@example.com">support@example.com</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
