@@ -128,7 +128,7 @@ output/tutorial/00_minimal/code/eval.cl</code></pre>
       <div class="container">
         <h2 id="contact-heading" class="gradient-text">Contact</h2>
         <div class="feature-card">
-          <p>For inquiries, email: <a href="mailto:support@example.com">support@example.com</a></p>
+          <p>For inquiries, email: <a href="mailto:mdx1358@fastmail.com">mdx1358@fastmail.com</a></p>
         </div>
       </div>
     </section>

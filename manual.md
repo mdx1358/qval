@@ -3,6 +3,9 @@ layout: default
 title: Manual
 ---
 
+<main style="padding: 6rem 0; background: linear-gradient(180deg, var(--bg-color) 0%, var(--card-bg) 100%);">
+  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem;">
+    
 # QVAL Manual
 
 Complete user documentation for QVAL - GPU-accelerated function evaluator and optimizer.
@@ -585,100 +588,5 @@ Warning: Double precision not supported, falling back to float32
 - **Review manual sections** for specific features
 - **Examine generated `build_error.log`** for compilation issues
 
-<style>
-/* Manual-specific styling */
-.manual-content {
-  max-width: 900px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
-.manual-content h2 {
-  color: #2c3e50;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 10px;
-  margin-top: 40px;
-}
-
-.manual-content h3 {
-  color: #34495e;  
-  margin-top: 30px;
-}
-
-.manual-content code {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 0.9em;
-  font-family: 'Consolas', 'Monaco', monospace;
-}
-
-.manual-content pre {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 16px;
-  overflow-x: auto;
-  margin: 16px 0;
-}
-
-.manual-content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-.manual-content .highlight {
-  margin: 16px 0;
-}
-
-.manual-content .highlight pre {
-  margin: 0;
-}
-
-.manual-content blockquote {
-  border-left: 4px solid #3498db;
-  padding-left: 20px;
-  margin: 20px 0;
-  color: #555;
-  font-style: italic;
-  background: #f9f9f9;
-  padding: 15px 20px;
-  border-radius: 0 6px 6px 0;
-}
-
-.manual-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-
-.manual-content table th,
-.manual-content table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-}
-
-.manual-content table th {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.manual-content .note {
-  padding: 15px;
-  margin: 20px 0;
-  border-radius: 6px;
-  border-left: 4px solid #f39c12;
-  background: #fef9e7;
-}
-
-.manual-content .warning {
-  padding: 15px;
-  margin: 20px 0; 
-  border-radius: 6px;
-  border-left: 4px solid #e74c3c;
-  background: #fdf2f2;
-}
-</style>
+  </div>
+</main>

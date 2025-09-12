@@ -3,6 +3,9 @@ layout: default
 title: Examples
 ---
 
+<main style="padding: 6rem 0; background: linear-gradient(180deg, var(--bg-color) 0%, var(--card-bg) 100%);">
+  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem;">
+    
 # Real-world Examples
 
 Explore QVAL's capabilities through practical examples demonstrating various optimization scenarios, sampling strategies, and advanced features.
@@ -333,60 +336,5 @@ evaluate:
 - Check out [config/tutorial/](https://github.com/mdx1358/qval/tree/main/config/tutorial) for step-by-step tutorials
 - Review [config/test/](https://github.com/mdx1358/qval/tree/main/config/test) for validation examples
 
-<style>
-.example-section {
-  margin: 40px 0;
-  padding: 25px;
-  border-left: 4px solid #667eea;
-  background: #f8f9fa;
-  border-radius: 0 8px 8px 0;
-}
-
-.example-section h3 {
-  color: #2c3e50;
-  margin-top: 0;
-}
-
-.example-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin: 15px 0;
-  padding: 15px;
-  background: white;
-  border-radius: 6px;
-  font-size: 0.9em;
-}
-
-.example-meta div {
-  padding: 8px 12px;
-  background: #e9ecef;
-  border-radius: 4px;
-}
-
-.example-meta div strong {
-  display: block;
-  color: #495057;
-  margin-bottom: 3px;
-}
-
-code {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.9em;
-}
-
-pre {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 16px;
-  overflow-x: auto;
-}
-
-.highlight pre {
-  background-color: #f8f9fa;
-}
-</style>
+  </div>
+</main>
