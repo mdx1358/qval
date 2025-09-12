@@ -3,6 +3,9 @@
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Platform Support](https://img.shields.io/badge/platform-macOS%20(Apple%20Silicon)-blue)](https://github.com)
 [![GPU Acceleration](https://img.shields.io/badge/acceleration-OpenCL%20GPU-green)](https://www.khronos.org/opencl/)
+[![Website](https://img.shields.io/badge/website-mdx1358.github.io%2Fqval-purple)](https://mdx1358.github.io/qval/)
+
+> **🌐 [Visit the Project Website](https://mdx1358.github.io/qval/)** for interactive examples, tutorials, and comprehensive documentation.
 
 QVAL is a high-performance, GPU-accelerated function evaluator and optimizer designed for parallel exploration of parameter spaces. It leverages GPU parallelism to evaluate thousands to millions of parameter combinations simultaneously, making it ideal for optimization problems, parameter sweeps, and Monte Carlo simulations.
 
@@ -169,7 +172,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 QVAL is available under a dual license:
 
 - **Personal, Academic, and Research Use**: Free under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
-- **Commercial Use**: Requires a separate commercial license. Contact mdx1358@github.com for commercial licensing terms.
+- **Commercial Use**: Requires a separate commercial license. Contact mdx1358@fastmail.com for commercial licensing terms.
 
 See the [LICENSE](LICENSE) file for complete terms.
 
