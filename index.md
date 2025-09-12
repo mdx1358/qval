@@ -132,9 +132,9 @@ output/tutorial/00_minimal/code/eval.cl</code></pre>
           <p>For inquiries, email: <a href="mailto:mdx1358@fastmail.com" style="color: var(--primary-light);">mdx1358@fastmail.com</a></p>
         </div>
         <div class="feature-card">
-          <h3>Source Code</h3>
-          <p>QVAL is open source. View the code, report issues, or contribute:</p>
-          <p><a href="https://github.com/mdx1358/qval" style="color: var(--primary-light); font-weight: 600;" target="_blank">📚 GitHub Repository</a></p>
+          <h3>GitHub</h3>
+          <p><a href="https://github.com/mdx1358/qval" style="color: var(--primary-light); font-weight: 600; text-decoration: none;" target="_blank">📚 View on GitHub</a></p>
+          <p style="font-size: 0.95rem; color: var(--text-muted);">Documentation, releases, issues, and example configs</p>
         </div>
       </div>
     </section>

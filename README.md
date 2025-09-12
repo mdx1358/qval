@@ -163,9 +163,9 @@ Visit our [project website](https://mdx1358.github.io/qval/) for:
 - **Memory**: 4GB+ RAM recommended for large-scale evaluations
 - **Storage**: 500MB+ available space
 
-## 🤝 Contributing
+## 🤝 Community Contributions
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions of **example configurations and use cases**! If you have interesting QVAL configs or optimization scenarios, please share them via GitHub issues.
 
 ## 📄 License
 
