@@ -83,8 +83,8 @@ title: Home
           </div>
           <div class="step-card">
             <div class="step-num">5</div>
-            <h3>Score & output</h3>
-            <p>Built-ins reduce vectors; scores are ranked; top_k saved to output/&lt;mirror&gt;/{report,code,log}.</p>
+            <h3>Get results</h3>
+            <p>QVAL ranks all results, saves the best ones, and generates detailed reports with analysis.</p>
           </div>
         </div>
       </div>
