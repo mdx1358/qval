@@ -7,27 +7,27 @@ permalink: /manual/
 # QVAL Manual v0.1.1 (User)
 
 ## Contents
-- [1. Overview](#1-overview)
-- [2. Running](#2-running)
-- [3. Config layout (bin/config)](#3-config-layout-binconfig)
-- [4. YAML schema (brief)](#4-yaml-schema-brief)
-- [5. Parameter fields](#5-parameter-fields)
-- [6. Expression helpers](#6-expression-helpers)
-- [7. Compilation options (OpenCL)](#7-compilation-options-opencl)
-- [8. I/O](#8-io)
-- [9. Report generation](#9-report-generation)
-- [10. Examples](#10-examples)
-- [11. Tests (small)](#11-tests-small)
-- [12. Suite runner](#12-suite-runner)
-- [13. Multi-objective (weighted sum)](#13-multi-objective-weighted-sum)
-- [14. Precision control](#14-precision-control)
-- [15. Platform notes (macOS fp64)](#15-platform-notes-macos-fp64)
-- [16. Integer compute mode](#16-integer-compute-mode)
-- [17. Console output and verbosity](#17-console-output-and-verbosity)
+- [Overview](#overview)
+- [Running](#running)
+- [Config layout (bin/config)](#config-layout-binconfig)
+- [YAML schema (brief)](#yaml-schema-brief)
+- [Parameter fields](#parameter-fields)
+- [Expression helpers](#expression-helpers)
+- [Compilation options (OpenCL)](#compilation-options-opencl)
+- [I/O](#io)
+- [Report generation](#report-generation)
+- [Examples](#examples)
+- [Tests (small)](#tests-small)
+- [Suite runner](#suite-runner)
+- [Multi-objective (weighted sum)](#multi-objective-weighted-sum)
+- [Precision control](#precision-control)
+- [Platform notes (macOS fp64)](#platform-notes-macos-fp64)
+- [Integer compute mode](#integer-compute-mode)
+- [Console output and verbosity](#console-output-and-verbosity)
 
 See also: [Examples](./examples.md)
 
-## 1. Overview
+## Overview
 QVAL is a GPU-accelerated function evaluator and optimizer. It runs thousands to millions of parameter variants in parallel on the GPU and writes results (CSV/XLSX) and human-readable reports (txt/md/html/json). It supports multiple samplers, probability distributions, multi-dimensional parameters, and optimizers (CEM, DE).
 
 You define your objective as a simple math expression string (expr), or, for advanced logic, as a C-like expression file (OpenCL code) via expr_file. QVAL compiles this into fast device code under the hood; you typically don’t need to write low-level kernels unless you want to.
@@ -37,7 +37,7 @@ Why GPU parallelism matters:
 - Keep wall-clock low by mapping each variant to a GPU thread
 - Scale sampling/optimizers (LHS, Halton, CEM/DE) with high throughput
 
-## 2. Running
+## Running
 
 List devices (look for GPU):
 - macOS/Linux:
@@ -46,7 +46,7 @@ List devices (look for GPU):
   .\\qval.exe --list-devices
 Note: On Windows, use .\\ when running from the current directory unless qval.exe is on your PATH. Windows shells: PowerShell and Command Prompt (cmd) both support .\\qval.exe; if qval.exe is on your PATH you can call qval.exe directly.
 
-## 3. Config layout (bin/config)
+## Config layout (bin/config)
 - test/...: small coverage tests (fast)
 - example/...: heavier or domain examples
 
@@ -54,7 +54,7 @@ Example paths:
 - config/test/io/csv/by_index/by_index.yaml
 - config/example/functions/rosenbrock/min.yaml
 
-## 4. YAML schema (brief)
+## YAML schema (brief)
   expr | expr_file
   samples, top_k, goal, seed
   platform_id, device_id (optional)
@@ -82,7 +82,7 @@ evaluate:
     - { name: Y, type: float, dist: uniform, min: -2.0, max: 2.0, per_variation: true }
 ```
 
-## 5. Parameter fields
+## Parameter fields
 - name, type: float|int
 - mode: range|const
 - dist (range): uniform|min/max; normal|mean/std; trunc_normal|mean/std/min/max; triangular|min/mode/max; beta|alpha/beta/(min/max); exponential|lambda/(min/max); lognormal|log_mu/log_sigma; gamma|k/theta; cauchy|x0/gamma; categorical|values(/weights)
@@ -100,7 +100,7 @@ Examples:
 - Int categorical enum:
   - name: MODE, type: int, dist: categorical, enum: [slow, med, fast]
 
-## 6. Expression helpers
+## Expression helpers
 - Reductions: X_sum(), X_mean()
 - Additional built-ins:
   - X_min(), X_max() — min/max over all elements (int and float compute)
@@ -121,7 +121,7 @@ Examples:
   - A_argmin() (index of min in A)
   - dot_U_V() + corr_U_V() + saturate(A)
 
-## 7. Compilation options (OpenCL)
+## Compilation options (OpenCL)
 - CLI:
   - --cl-define NAME=VAL (repeatable; if no =VAL, defaults to 1)
   - --cl-flag "-cl-opt-disable" (repeatable; raw flags appended to the OpenCL build options)
@@ -140,7 +140,7 @@ Examples:
 
 See also: doc/advanced.md for more details.
 
-## 8. I/O
+## I/O
 - CSV read: one column => per-variation scalar parameter
 - XLSX read (.xlsx): sheet+range+column => per-variation scalar parameter
 - CSV/XLSX outputs (Top-K): if out_csv/out_xlsx is set in YAML, those paths are used. If out_csv is not set, QVAL writes a default CSV under bin/output/<mirrored config subdir>/report/<yaml_basename>.csv.
@@ -159,7 +159,7 @@ Examples:
       xlsx: { path: "config/test/io/xlsx/simple/test.xlsx", sheet: "Sheet1", range: "A1:A11", col: 1, header: true }
       per_variation: true
 
-## 9. Report generation
+## Report generation
 - Flags:
   - --report [fmt[,fmt2,...]] where fmt in {txt,md,html}
   - --report-out path (file for single fmt, or directory for multiple fmts)
@@ -177,7 +177,7 @@ Examples:
   .\\qval.exe -cf config\\test\\int\\arith_small.yaml --compute int --report md --report-out report\\my_report.md
   .\\qval.exe -cf config\\tutorial\\00_minimal\\00_minimal.yaml --perf --report html
 
-## 10. Examples
+## Examples
 - Functions: config/example/functions/rosenbrock/min.yaml
   - macOS/Linux: ./qval -cf config/example/functions/rosenbrock/min.yaml
   - Windows: .\\qval.exe -cf config\\example\\functions\\rosenbrock\\min.yaml
@@ -196,7 +196,7 @@ Examples:
   - macOS/Linux: ./qval -cf config/example/finance/opt/price_target.yaml
   - Windows: .\\qval.exe -cf config\\example\\finance\\opt\\price_target.yaml
 
-## 11. Tests (small)
+## Tests (small)
 - Samplers: config/test/samplers/sphere8/*_small.yaml
 - Optimizers: config/test/optimizers/rosenbrock/*_small.yaml
 - Dists: config/test/dists/*.yaml
@@ -208,7 +208,7 @@ Example run:
 - macOS/Linux: ./qval -cf config/test/io/csv/by_index/by_index.yaml
 - Windows: .\\qval.exe -cf config\\test\\io\\csv\\by_index\\by_index.yaml
 
-## 12. Suite runner
+## Suite runner
 - macOS/Linux:
   ./qval --run-suite config/test
   ./qval --run-suite config/test --include-slow
@@ -223,7 +223,7 @@ Example run:
   - util/run_gpu_verification.sh (or .ps1) - Comprehensive GPU verification
 - PASS: Tests must include a verify block under evaluate.verify; the program exits non-zero on failure.
 
-## 13. Multi-objective (weighted sum)
+## Multi-objective (weighted sum)
 - YAML block under evaluate.multi:
 ```yaml
 evaluate:
@@ -238,7 +238,7 @@ evaluate:
   - macOS/Linux: ./qval -cf config/example/multi/weighted_sum.yaml --report md --report-out report/example/multi
   - Windows: .\\qval.exe -cf config\\example\\multi\\weighted_sum.yaml --report md --report-out report\\example\\multi
 
-## 14. Precision control
+## Precision control
 
 Examples:
 - macOS/Linux (default float32 with perf):
@@ -265,11 +265,11 @@ Examples:
   - Try half precision:
     ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --precision half --perf
 
-## 15. Platform notes (macOS fp64)
+## Platform notes (macOS fp64)
 - Apple Silicon GPU OpenCL does not expose cl_khr_fp64. Using --precision double will fall back to float32 unless you add --no-fallback (which may cause kernel build or runtime failures depending on the driver).
 - If an OpenCL CPU device is present and supports cl_khr_fp64, select it with --platform/--device and run with --precision double [--no-fallback].
 
-## 16. Integer compute mode
+## Integer compute mode
 - Flags: --compute int [--int-precision {int8,int16,int32,int64,int4}]
 - Default: int32; int4 is emulated via int8 with a warning.
 - Behavior:
@@ -282,7 +282,7 @@ Examples:
 - macOS/Linux: ./qval -cf config/test/dists/categorical_enum.yaml --compute int --int-precision int32
 - Windows: .\\qval.exe -cf config\\test\\dists\\categorical_enum.yaml --compute int --int-precision int32
 
-## 17. Console output and verbosity
+## Console output and verbosity
 - Top-K display: QVAL prints a compact, aligned table of the top results (rank, index, score, and each parameter; MD params show name_mean).
 - --quiet: suppresses less-useful chatter (e.g., the "kernel saved to:" line) to keep output focused.
 - --verbose: enables extra OpenCL device detail; notably it shows the full OpenCL extension string. By default, extensions are hidden.
