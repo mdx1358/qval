@@ -18,7 +18,7 @@ QVAL is a high-performance, GPU-accelerated function evaluator and optimizer des
 - **Multi-Objective Support**: Weighted sum aggregation for multiple objectives
 - **Rich Parameter Types**: Scalars, multi-dimensional arrays, and various probability distributions
 - **Comprehensive I/O**: CSV/XLSX input/output with customizable report generation
-- **Cross-Platform**: Native support for macOS (Apple Silicon), Windows support coming soon
+- **Cross-Platform**: Native support for macOS (Apple Silicon) and Windows (x64)
 
 ## 📊 Why GPU Parallelism Matters
 
@@ -40,7 +40,7 @@ QVAL is a high-performance, GPU-accelerated function evaluator and optimizer des
 ### Installation
 Download the pre-built binaries for your platform:
 - [macOS (Apple Silicon)](https://github.com/mdx1358/qval/releases/latest) - Available now
-- [Windows (x64)](https://github.com/mdx1358/qval/releases/latest) - Coming in a few days
+- [Windows (x64)](https://github.com/mdx1358/qval/releases/latest) - Available now
 
 ### Basic Usage
 
@@ -131,20 +131,25 @@ evaluate:
 
 ### Running Tests
 ```bash
-# Quick test suite
+# Quick sanity checks
+./run_basic_example.sh        # Basic example with multiple parameters
+./run_gpu_verification.sh     # Comprehensive GPU verification
+
+# Comprehensive testing
+util/run_all_test.sh          # All test configurations (fast)
+util/run_all_example.sh       # All example configurations
+util/run_all_tutorial.sh      # All tutorial configurations
+util/run_all_slow_test.sh     # All slow/GPU load tests
+util/run_gpu_verification.sh  # Comprehensive GPU verification
+
+# Legacy suite commands
 ./qval --run-suite config/test
-
-# Include slower tests
 ./qval --run-suite config/test --include-slow
-
-# Manual test script (if available)
-util/run_all_tests.sh
 ```
 
 ## 📖 Documentation
 
-- **[User Manual](bin/doc/manual.md)** - Comprehensive usage guide
-- **[Developer Guide](bin/doc/dev.md)** - Development and build instructions
+- **[Complete Manual](doc/qval_manual.txt)** - Comprehensive user manual in text format
 - **[Examples](config/example/)** - Real-world usage examples
 - **[Test Suite](config/test/)** - Validation and regression tests
 
@@ -158,7 +163,7 @@ Visit our [project website](https://mdx1358.github.io/qval/) for:
 
 ## 📋 System Requirements
 
-- **Operating System**: macOS 10.14+ (Apple Silicon), Windows 10+ (coming soon)
+- **Operating System**: macOS 10.14+ (Apple Silicon), Windows 10+ (x64)
 - **GPU**: OpenCL 1.2+ compatible device (NVIDIA, AMD, Intel, Apple Silicon)
 - **Memory**: 4GB+ RAM recommended for large-scale evaluations
 - **Storage**: 500MB+ available space

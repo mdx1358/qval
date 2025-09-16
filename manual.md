@@ -1,587 +1,288 @@
----
-layout: page
-title: Manual
----
+# QVAL Manual v0.1.1 (User)
 
-# QVAL Manual
+## Contents
+- [1. Overview](#1-overview)
+- [2. Running](#2-running)
+- [3. Config layout (bin/config)](#3-config-layout-binconfig)
+- [4. YAML schema (brief)](#4-yaml-schema-brief)
+- [5. Parameter fields](#5-parameter-fields)
+- [6. Expression helpers](#6-expression-helpers)
+- [7. Compilation options (OpenCL)](#7-compilation-options-opencl)
+- [8. I/O](#8-io)
+- [8. Report generation](#8-report-generation)
+- [9. Examples](#9-examples)
+- [10. Tests (small)](#10-tests-small)
+- [11. Suite runner](#11-suite-runner)
+- [12. Multi-objective (weighted sum)](#12-multi-objective-weighted-sum)
+- [13. Precision control](#13-precision-control)
+- See also: [Built-ins Tutorial](./builtins_tutorial.md)
 
-Complete user documentation for QVAL - GPU-accelerated function evaluator and optimizer.
+## 1. Overview
+QVAL is a GPU-accelerated function evaluator and optimizer. It runs thousands to millions of parameter variants in parallel on the GPU and writes results (CSV/XLSX) and human-readable reports (txt/md/html/json). It supports multiple samplers, probability distributions, multi-dimensional parameters, and optimizers (CEM, DE).
 
-## Table of Contents
+You define your objective as a simple math expression string (expr), or, for advanced logic, as a C-like expression file (OpenCL code) via expr_file. QVAL compiles this into fast device code under the hood; you typically don’t need to write low-level kernels unless you want to.
 
-- [Overview](#overview)
-- [Installation](#installation)
-- [Quick Start](#quick-start)  
-- [Configuration](#configuration)
-- [Command Line Options](#command-line-options)
-- [Parameter Types](#parameter-types)
-- [Expressions](#expressions)
-- [Sampling Strategies](#sampling-strategies)
-- [Optimization Algorithms](#optimization-algorithms)
-- [Multi-Objective Optimization](#multi-objective-optimization)
-- [Input/Output](#inputoutput)
-- [Report Generation](#report-generation)
-- [Performance Tuning](#performance-tuning)
-- [Troubleshooting](#troubleshooting)
+Why GPU parallelism matters:
+- Evaluate many parameter combinations at once (e.g., 1e5–1e6 samples) to explore search spaces quickly
+- Keep wall-clock low by mapping each variant to a GPU thread
+- Scale sampling/optimizers (LHS, Halton, CEM/DE) with high throughput
 
-## Overview
+## 2. Running
 
-QVAL is a GPU-accelerated function evaluator and optimizer that runs thousands to millions of parameter variants in parallel on the GPU. It supports multiple samplers, probability distributions, multi-dimensional parameters, and optimizers (CEM, DE).
+List devices (look for GPU):
+- macOS/Linux:
+  ./qval --list-devices
+- Windows (PowerShell):
+  .\\qval.exe --list-devices
+Note: On Windows, use .\\ when running from the current directory unless qval.exe is on your PATH. Windows shells: PowerShell and Command Prompt (cmd) both support .\\qval.exe; if qval.exe is on your PATH you can call qval.exe directly.
 
-### Why GPU Parallelism Matters
+## 3. Config layout (bin/config)
+- test/...: small coverage tests (fast)
+- example/...: heavier or domain examples
 
-- **Evaluate many parameter combinations simultaneously** (e.g., 100K–1M+ samples) to explore search spaces quickly
-- **Keep wall-clock time low** by mapping each variant to a GPU thread
-- **Scale sampling/optimization algorithms** (LHS, Halton, Sobol, CEM/DE) with high throughput
+Example paths:
+- config/test/io/csv/by_index/by_index.yaml
+- config/example/functions/rosenbrock/min.yaml
 
-## Installation
+## 4. YAML schema (brief)
+  expr | expr_file
+  samples, top_k, goal, seed
+  platform_id, device_id (optional)
+- sampler: rng|lhs|halton|sobol (Sobol is multi-dimensional across eligible scalar per-variation float params; up to 8 dims)
+  out_csv, out_xlsx (optional)
+  search: { algo: cem|de, iters, batch, elite_frac }
+  verify:                                   # optional, used by the test suite
+    top_score: { ge: <float>, le: <float> } # bounds for the best score
+    param_ranges:                           # check scalar parameters at best index
+      - { name: P, min: <float>, max: <float> }
+    outputs: { csv: true|false, xlsx: true|false }
+  params: list of parameter definitions
 
-### Pre-built Binaries
-
-Download the appropriate package for your platform:
-
-- **macOS**: Universal binary supporting both Intel and Apple Silicon
-- **Linux**: x64 binary for modern Linux distributions
-- **Windows**: x64 binary for Windows 10+
-
-### System Requirements
-
-- **GPU**: OpenCL 1.2+ compatible device (NVIDIA, AMD, Intel, Apple Silicon)
-- **Memory**: 4GB+ RAM recommended for large-scale evaluations
-- **Storage**: 500MB+ available space
-
-## Quick Start
-
-### 1. Check GPU Availability
-
-```bash
-# macOS/Linux
-./qval --list-devices
-
-# Windows (PowerShell)  
-.\qval.exe --list-devices
-```
-
-Look for GPU devices in the output. QVAL performs best on dedicated GPUs.
-
-### 2. Run Basic Example
-
-```bash
-# macOS/Linux
-./qval --config config/tutorial/00_minimal/00_minimal.yaml
-
-# Windows
-.\qval.exe --config config\tutorial\00_minimal\00_minimal.yaml
-```
-
-### 3. Generate Reports
-
-```bash
-# Create comprehensive reports
-./qval --config config/tutorial/00_minimal/00_minimal.yaml --report txt,md,html
-```
-
-## Configuration
-
-QVAL uses YAML configuration files to define optimization problems. Here's the basic structure:
-
+Example:
 ```yaml
 evaluate:
-  expr: "X^2 + Y^2"        # Math expression to evaluate
-  samples: 10000           # Number of parallel evaluations
-  top_k: 10               # Best results to return  
-  goal: min               # Minimize or maximize
-  sampler: lhs            # Sampling strategy
-  
+  expr: "X^2 + Y^2"
+  samples: 1000
+  top_k: 5
+  goal: min
+  sampler: lhs
+  out_csv: "report/example/functions/quadratic/min.csv"
+  params:
+    - { name: X, type: float, dist: uniform, min: -2.0, max: 2.0, per_variation: true }
+    - { name: Y, type: float, dist: uniform, min: -2.0, max: 2.0, per_variation: true }
+```
+
+## 5. Parameter fields
+- name, type: float|int
+- mode: range|const
+- dist (range): uniform|min/max; normal|mean/std; trunc_normal|mean/std/min/max; triangular|min/mode/max; beta|alpha/beta/(min/max); exponential|lambda/(min/max); lognormal|log_mu/log_sigma; gamma|k/theta; cauchy|x0/gamma; categorical|values(/weights)
+- shape: [d1, d2, d3] (optional)
+- per_variation: true|false (defaults to true for scalars)
+- enum/enum_values for ints (optional)
+- csv: { path, col, header, col_name }
+- xlsx: { path, sheet, range, col, header } (.xlsx only)
+
+Examples:
+- Float uniform range:
+  - { name: A, type: float, dist: uniform, min: -1.0, max: 1.0, per_variation: true }
+- Int constant:
+  - { name: SPEED, type: int, mode: const, value: 2 }
+- Int categorical enum:
+  - name: MODE, type: int, dist: categorical, enum: [slow, med, fast]
+
+## 6. Expression helpers
+- Reductions: X_sum(), X_mean()
+- Additional built-ins:
+  - X_min(), X_max() — min/max over all elements (int and float compute)
+  - X_var(), X_std(), X_norm2() — variance, standard deviation, L2 norm (float compute)
+  - X_argmin(), X_argmax() — index of min/max (returned as a scalar; index base 0)
+- Pairwise built-ins for float tensors with matching shapes:
+  - dot_X_Y() — dot product of X and Y over elements
+  - corr_X_Y() — Pearson correlation of X and Y over elements
+- Global helpers: saturate(x) clamps to [0,1]
+- MD accessors: X_at1(i), X_at2(i,j), X_at3(i,j,k)
+- Rewrites: x^k => multiplies; abs/min/max => fabs/fmin/fmax
+
+Examples:
+- X^3 becomes X*X*X (float mode)
+- abs(A) + max(B,C) valid in float; in integer compute mode use abs/min/max, %, and ^ (XOR) for ints
+- Built-ins:
+  - C_mean() + C_std() + C_min() + C_max()
+  - A_argmin() (index of min in A)
+  - dot_U_V() + corr_U_V() + saturate(A)
+
+## 7. Compilation options (OpenCL)
+- CLI:
+  - --cl-define NAME=VAL (repeatable; if no =VAL, defaults to 1)
+  - --cl-flag "-cl-opt-disable" (repeatable; raw flags appended to the OpenCL build options)
+  - --cl-include <dir> (repeatable; adds -I <dir>)
+- YAML (under evaluate.compile):
+  - defines: [FOO=1, USE_BAR]
+  - flags: ["-cl-opt-disable", ...]
+  - includes: ["include", "/absolute/include"]
+- Merging rules: CLI augments/overrides YAML; YAML includes are resolved relative to the YAML file when not absolute.
+
+Examples:
+- macOS/Linux:
+  ./qval -cf config/example/functions/rosenbrock/min.yaml --cl-define FOO=1 --cl-flag -cl-opt-disable --cl-include include
+- Windows (PowerShell):
+  .\\qval.exe -cf config\\example\\functions\\rosenbrock\\min.yaml --cl-define FOO=1 --cl-flag -cl-opt-disable --cl-include include
+
+See also: doc/advanced.md for more details.
+
+## 8. I/O
+- CSV read: one column => per-variation scalar parameter
+- XLSX read (.xlsx): sheet+range+column => per-variation scalar parameter
+- CSV/XLSX outputs (Top-K): if out_csv/out_xlsx is set in YAML, those paths are used. If out_csv is not set, QVAL writes a default CSV under bin/output/<mirrored config subdir>/report/<yaml_basename>.csv.
+
+Examples:
+- CSV param:
+  params:
+    - name: VALUE
+      type: float
+      csv: { path: "config/test/io/csv/by_index/test.csv", col: 1, header: false }
+      per_variation: true
+- XLSX param:
   params:
     - name: X
       type: float
-      dist: uniform
-      min: -5.0
-      max: 5.0
+      xlsx: { path: "config/test/io/xlsx/simple/test.xlsx", sheet: "Sheet1", range: "A1:A11", col: 1, header: true }
       per_variation: true
-    - name: Y
-      type: float  
-      dist: uniform
-      min: -5.0
-      max: 5.0
-      per_variation: true
-```
 
-### Required Fields
-
-- **`expr` or `expr_file`**: Math expression or OpenCL file
-- **`samples`**: Number of parallel evaluations
-- **`top_k`**: Number of best results to return
-- **`goal`**: `min` or `max`
-- **`params`**: List of parameter definitions
-
-### Optional Fields
-
-- **`sampler`**: `rng`, `lhs`, `halton`, `sobol` (default: `rng`)
-- **`seed`**: Random seed for reproducibility
-- **`platform_id`**, **`device_id`**: Specific OpenCL device selection
-- **`out_csv`**, **`out_xlsx`**: Output file paths
-- **`search`**: Optimization algorithm configuration
-
-## Command Line Options
-
-### Basic Options
-
-- **`--config PATH`** or **`-cf PATH`**: Configuration file path
-- **`--list-devices`**: Show available OpenCL devices
-- **`--device-auto`**: Automatically select best GPU device
-- **`--help`**: Show help information
-- **`--version`**: Show version information
-
-### Device Selection
-
-- **`--platform ID`**: Select OpenCL platform by ID
-- **`--device ID`**: Select OpenCL device by ID  
-- **`--device-auto`**: Auto-select best available GPU
-
-### Precision Control
-
-- **`--precision TYPE`**: Set compute precision (`float`, `double`, `half`)
-- **`--no-fallback`**: Strict precision (fail if unsupported)
-- **`--compute int`**: Integer compute mode
-- **`--int-precision TYPE`**: Integer precision (`int8`, `int16`, `int32`, `int64`)
-
-### OpenCL Compilation
-
-- **`--cl-define NAME=VALUE`**: Add OpenCL preprocessor define
-- **`--cl-flag FLAG`**: Add OpenCL compiler flag
-- **`--cl-include PATH`**: Add OpenCL include directory
-
-### Output and Reports
-
-- **`--report FORMATS`**: Generate reports (`txt`, `md`, `html`)
-- **`--report-out PATH`**: Output path for reports
-- **`--report-topk N`**: Number of results in report
-- **`--perf`**: Include performance metrics
-- **`--perf-txt PATH`**: Save performance to text file
-
-### Verbosity
-
-- **`--quiet`**: Suppress non-essential output
-- **`--verbose`**: Show detailed information
-
-### Test Suite
-
-- **`--run-suite PATH`**: Run test suite from directory
-- **`--include-slow`**: Include slow tests in suite
-
-## Parameter Types
-
-### Scalar Parameters
-
-```yaml
-params:
-  # Float uniform distribution
-  - name: X
-    type: float
-    dist: uniform
-    min: -1.0
-    max: 1.0
-    per_variation: true
-    
-  # Integer constant
-  - name: COUNT
-    type: int
-    mode: const
-    value: 100
-    
-  # Normal distribution
-  - name: NOISE
-    type: float
-    dist: normal
-    mean: 0.0
-    std: 0.1
-```
-
-### Multi-Dimensional Parameters
-
-```yaml
-params:
-  # 2D array parameter
-  - name: MATRIX
-    type: float
-    shape: [3, 3]
-    dist: uniform
-    min: -1.0
-    max: 1.0
-    
-  # 1D vector parameter  
-  - name: COEFFS
-    type: float
-    shape: [8]
-    dist: normal
-    mean: 0.0
-    std: 1.0
-```
-
-### Supported Distributions
-
-- **`uniform`**: `min`, `max`
-- **`normal`**: `mean`, `std` 
-- **`trunc_normal`**: `mean`, `std`, `min`, `max`
-- **`triangular`**: `min`, `mode`, `max`
-- **`beta`**: `alpha`, `beta`, optional `min`/`max`
-- **`exponential`**: `lambda`, optional `min`/`max`
-- **`lognormal`**: `log_mu`, `log_sigma`
-- **`gamma`**: `k`, `theta`
-- **`cauchy`**: `x0`, `gamma`
-- **`categorical`**: `values`, optional `weights`
-
-### External Data Input
-
-```yaml
-params:
-  # CSV input
-  - name: DATA_POINT
-    type: float
-    csv:
-      path: "data/input.csv" 
-      col: 1
-      header: true
-    per_variation: true
-    
-  # Excel input
-  - name: PARAMETER
-    type: float
-    xlsx:
-      path: "data/params.xlsx"
-      sheet: "Sheet1"
-      range: "A1:A100"
-      col: 1
-      header: true
-    per_variation: true
-```
-
-## Expressions
-
-### Simple Math Expressions
-
-```yaml
-evaluate:
-  expr: "X^2 + Y^2"           # Basic arithmetic
-  expr: "sin(X) + cos(Y)"     # Trigonometric functions
-  expr: "sqrt(X^2 + Y^2)"     # Square root
-  expr: "abs(X - Y)"          # Absolute value
-  expr: "max(X, 0) + min(Y, 1)" # Min/max functions
-```
-
-### Built-in Functions
-
-#### Reduction Functions
-- **`X_sum()`**: Sum of all elements in parameter X
-- **`X_mean()`**: Mean of all elements
-- **`X_min()`, `X_max()`**: Min/max values
-- **`X_var()`, `X_std()`**: Variance and standard deviation
-- **`X_norm2()`**: L2 norm
-- **`X_argmin()`, `X_argmax()`**: Index of min/max element
-
-#### Pairwise Functions
-- **`dot_X_Y()`**: Dot product of X and Y
-- **`corr_X_Y()`**: Pearson correlation of X and Y
-
-#### Multi-Dimensional Accessors
-- **`X_at1(i)`**: Access 1D array element
-- **`X_at2(i,j)`**: Access 2D array element  
-- **`X_at3(i,j,k)`**: Access 3D array element
-
-#### Utility Functions
-- **`saturate(x)`**: Clamp value to [0,1] range
-
-### Advanced OpenCL Expressions
-
-For complex logic, use OpenCL expression files:
-
-```yaml
-evaluate:
-  expr_file: "custom_logic.cl"
-```
-
-**Example `custom_logic.cl`:**
-```c
-// Custom OpenCL kernel code
-FNEV_T result = 0.0f;
-for(int i = 0; i < 8; i++) {
-    result += COEFFS_at1(i) * sin(i * X * M_PI / 4.0f);
-}
-return result;
-```
-
-## Sampling Strategies
-
-### Uniform Random Sampling (`rng`)
-
-Standard pseudorandom sampling with uniform distribution.
-
-```yaml
-evaluate:
-  sampler: rng
-  seed: 12345  # Optional: for reproducibility
-```
-
-**Best for**: General-purpose sampling, Monte Carlo simulations
-
-### Latin Hypercube Sampling (`lhs`)
-
-Space-filling design that ensures even coverage across parameter ranges.
-
-```yaml
-evaluate:
-  sampler: lhs
-```
-
-**Best for**: Design of experiments, optimization with limited samples
-
-### Halton Sequences (`halton`)
-
-Low-discrepancy quasi-random sequences for better space coverage.
-
-```yaml
-evaluate:
-  sampler: halton
-```
-
-**Best for**: Quasi-Monte Carlo methods, systematic space exploration
-
-### Sobol Sequences (`sobol`)
-
-Multi-dimensional quasi-random sequences (up to 8 dimensions).
-
-```yaml
-evaluate:
-  sampler: sobol
-```
-
-**Best for**: High-dimensional problems, improved convergence over random sampling
-
-**Note**: Sobol sequences work with up to 8 scalar float parameters with `per_variation: true`.
-
-## Optimization Algorithms
-
-### Cross-Entropy Method (CEM)
-
-Iteratively improves sampling distribution based on elite samples.
-
-```yaml
-evaluate:
-  search:
-    algo: cem
-    iters: 50           # Number of iterations
-    batch: 5000         # Samples per iteration  
-    elite_frac: 0.1     # Top 10% as elite samples
-```
-
-**Best for**: Continuous optimization, noisy objective functions
-
-### Differential Evolution (DE)
-
-Population-based evolutionary algorithm with mutation and crossover.
-
-```yaml
-evaluate:
-  search:
-    algo: de
-    iters: 100          # Generations
-    batch: 1000         # Population size
-    elite_frac: 0.3     # Selection pressure
-```
-
-**Best for**: Global optimization, multimodal functions
-
-## Multi-Objective Optimization
-
-Optimize multiple conflicting objectives using weighted sum aggregation.
-
+## 8. Report generation
+- Flags:
+  - --report [fmt[,fmt2,...]] where fmt in {txt,md,html}
+  - --report-out path (file for single fmt, or directory for multiple fmts)
+  - --report-topk K (optional; defaults to top_k)
+- Defaults: if you pass --report with no value, QVAL writes both txt and md to bin/output/<mirrored config subdir>/report/report.{txt,md}.
+- Content: header (config path, device, samples, goal, seed, compute type); if --perf is set, perf summary is included (wall, gpu, ratio, dev_mem, host_maxrss when available). Followed by a Top-K table with parameters (MD params reported as name_mean).
+
+Examples:
+- macOS/Linux:
+  ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --report
+  ./qval -cf config/test/int/arith_small.yaml --compute int --report md --report-out report/my_report.md
+  ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --perf --report html
+- Windows (PowerShell):
+  .\\qval.exe -cf config\\tutorial\\00_minimal\\00_minimal.yaml --report
+  .\\qval.exe -cf config\\test\\int\\arith_small.yaml --compute int --report md --report-out report\\my_report.md
+  .\\qval.exe -cf config\\tutorial\\00_minimal\\00_minimal.yaml --perf --report html
+
+## 9. Examples
+- Functions: config/example/functions/rosenbrock/min.yaml
+  - macOS/Linux: ./qval -cf config/example/functions/rosenbrock/min.yaml
+  - Windows: .\\qval.exe -cf config\\example\\functions\\rosenbrock\\min.yaml
+- Samplers: config/example/samplers/sphere8/{lhs,halton,sobol}.yaml
+  - macOS/Linux: ./qval -cf config/example/samplers/sphere8/lhs.yaml
+  - Windows: .\\qval.exe -cf config\\example\\samplers\\sphere8\\lhs.yaml
+  - macOS/Linux: ./qval -cf config/example/samplers/sphere8/sobol.yaml
+  - Windows: .\\qval.exe -cf config\\example\\samplers\\sphere8\\sobol.yaml
+- Optimizers: config/example/optimizers/rosenbrock/{cem,de}.yaml
+  - macOS/Linux: ./qval -cf config/example/optimizers/rosenbrock/cem.yaml
+  - Windows: .\\qval.exe -cf config\\example\\optimizers\\rosenbrock\\cem.yaml
+- MD: config/example/md/sphere_md.yaml
+  - macOS/Linux: ./qval -cf config/example/md/sphere_md.yaml
+  - Windows: .\\qval.exe -cf config\\example\\md\\sphere_md.yaml
+- Real: config/example/finance/opt/price_target.yaml
+  - macOS/Linux: ./qval -cf config/example/finance/opt/price_target.yaml
+  - Windows: .\\qval.exe -cf config\\example\\finance\\opt\\price_target.yaml
+
+## 10. Tests (small)
+- Samplers: config/test/samplers/sphere8/*_small.yaml
+- Optimizers: config/test/optimizers/rosenbrock/*_small.yaml
+- Dists: config/test/dists/*.yaml
+- IO: config/test/io/csv/... and io/xlsx/simple/simple.yaml
+- MD: config/test/md/*.yaml
+- Expr file: config/test/expr/expr_file/expr_file.yaml
+
+Example run:
+- macOS/Linux: ./qval -cf config/test/io/csv/by_index/by_index.yaml
+- Windows: .\\qval.exe -cf config\\test\\io\\csv\\by_index\\by_index.yaml
+
+## 11. Suite runner
+- macOS/Linux:
+  ./qval --run-suite config/test
+  ./qval --run-suite config/test --include-slow
+- Windows (PowerShell):
+  .\\qval.exe --run-suite config\\test
+  .\\qval.exe --run-suite config\\test --include-slow
+- Alternatively, use the standardized util scripts:
+  - util/run_all_test.sh (or .ps1) - Run all test configurations
+  - util/run_all_example.sh (or .ps1) - Run all example configurations
+  - util/run_all_tutorial.sh (or .ps1) - Run all tutorial configurations
+  - util/run_all_slow_test.sh (or .ps1) - Run all slow/GPU load tests
+  - util/run_gpu_verification.sh (or .ps1) - Comprehensive GPU verification
+- PASS: Tests must include a verify block under evaluate.verify; the program exits non-zero on failure.
+
+## 12. Multi-objective (weighted sum)
+- YAML block under evaluate.multi:
 ```yaml
 evaluate:
   multi:
     type: weighted_sum
     exprs:
-      - expr: "X^2 + Y^2"           # Objective 1
-        weight: 0.6
-        goal: min
-      - expr: "abs(X - Y)"          # Objective 2  
-        weight: 0.4
-        goal: min
+      - { expr: "(X-1)^2 + (Y-1)^2", weight: 0.5, goal: min }
+      - { expr: "(X+1)^2 + (Y+1)^2", weight: 0.5, goal: min }
 ```
+- Behavior: synthesizes a single combined expression, converts min terms to -expr, sets overall goal to max, and optimizes with the usual modes (base/CEM/DE).
+- Example:
+  - macOS/Linux: ./qval -cf config/example/multi/weighted_sum.yaml --report md --report-out report/example/multi
+  - Windows: .\\qval.exe -cf config\\example\\multi\\weighted_sum.yaml --report md --report-out report\\example\\multi
 
-**Features**:
-- Automatically combines objectives with user-defined weights
-- Converts minimization terms and sets overall goal
-- Works with all sampling strategies and optimizers
+## 13. Precision control
 
-## Input/Output
+Examples:
+- macOS/Linux (default float32 with perf):
+./qval -cf config/tutorial/00_minimal/00_minimal.yaml --perf --perf-txt report/perf/minimal_f32.txt
+- Windows (PowerShell):
+.\\qval.exe -cf config\\tutorial\\00_minimal\\00_minimal.yaml --perf --perf-txt report\\perf\\minimal_f32.txt
+- Force double precision (error if unsupported):
+  ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --precision double --no-fallback --perf
+- Flag: --precision {float|float32|fp32|half|float16|fp16|double|float64|fp64}
+  - Default: float32
+  - half/float16 requires cl_khr_fp16 on the selected device
+  - double/float64 requires cl_khr_fp64 on the selected device
+- Fallback vs strict
+  - By default, if the device lacks the requested precision, QVAL falls back to float32 and prints a warning.
+  - To enforce strict precision, add --no-fallback. If unsupported, kernel build will likely fail (by design) so the run exits with an error.
+- Compute vs I/O
+  - Inputs remain float buffers; the kernel casts to the requested precision for computation (via an internal typedef)
+  - The output buffer remains float; kernel casts back to float when storing the result
+- Examples
+  - Default (float32):
+    ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --perf --perf-txt report/perf/minimal_f32.txt
+  - Force double precision (error if unsupported):
+    ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --precision double --no-fallback --perf
+  - Try half precision:
+    ./qval -cf config/tutorial/00_minimal/00_minimal.yaml --precision half --perf
 
-### CSV Output
+## 13. Platform notes (macOS fp64)
+- Apple Silicon GPU OpenCL does not expose cl_khr_fp64. Using --precision double will fall back to float32 unless you add --no-fallback (which may cause kernel build or runtime failures depending on the driver).
+- If an OpenCL CPU device is present and supports cl_khr_fp64, select it with --platform/--device and run with --precision double [--no-fallback].
 
-```yaml
-evaluate:
-  out_csv: "results/optimization_results.csv"
-```
+## 14. Integer compute mode
+- Flags: --compute int [--int-precision {int8,int16,int32,int64,int4}]
+- Default: int32; int4 is emulated via int8 with a warning.
+- Behavior:
+  - Inputs remain float buffers; the kernel casts to FNEV_T (the chosen integer type) via typedef for computation.
+  - Output remains float; the kernel casts back from FNEV_T to float for results.
+- Supported ops: +, -, *, integer /, %, abs, min/max, comparisons, ternary ?:
+- Pow/exp/trig are not supported in integer mode unless you provide explicit integer-safe logic. The pow(a,b) inline optimization (for small integer b) applies to float mode only.
 
-Generates CSV with columns: `rank`, `index`, `score`, and each parameter.
+Examples:
+- macOS/Linux: ./qval -cf config/test/dists/categorical_enum.yaml --compute int --int-precision int32
+- Windows: .\\qval.exe -cf config\\test\\dists\\categorical_enum.yaml --compute int --int-precision int32
 
-### Excel Output
+## 15. Console output and verbosity
+- Top-K display: QVAL prints a compact, aligned table of the top results (rank, index, score, and each parameter; MD params show name_mean).
+- --quiet: suppresses less-useful chatter (e.g., the "kernel saved to:" line) to keep output focused.
+- --verbose: enables extra OpenCL device detail; notably it shows the full OpenCL extension string. By default, extensions are hidden.
 
-```yaml
-evaluate:
-  out_xlsx: "results/optimization_results.xlsx"
-```
-
-Creates Excel file with formatted results including metadata.
-
-### Default Output Paths
-
-If no output path specified, results are saved to:
-```
-bin/output/<config_subdir>/report/<config_name>.csv
-```
-
-## Report Generation
-
-### Command Line Reports
-
-```bash
-# Generate text report
-./qval --config config.yaml --report txt
-
-# Multiple formats
-./qval --config config.yaml --report txt,md,html
-
-# Custom output location
-./qval --config config.yaml --report md --report-out ./reports/
-```
-
-### Report Contents
-
-Reports include:
-- **Configuration summary**: File path, device info, parameters
-- **Performance metrics**: Wall time, GPU time, memory usage (with `--perf`)
-- **Top-K results table**: Best parameter combinations and scores
-- **Parameter statistics**: For multi-dimensional parameters
-
-### Performance Reports
-
-```bash
-# Include performance metrics
-./qval --config config.yaml --perf --report txt
-
-# Save performance to separate file
-./qval --config config.yaml --perf-txt performance.log
-```
-
-## Performance Tuning
-
-### GPU Selection
-
-1. **List available devices**:
-   ```bash
-   ./qval --list-devices
-   ```
-
-2. **Auto-select best GPU**:
-   ```bash
-   ./qval --config config.yaml --device-auto
-   ```
-
-3. **Manual device selection**:
-   ```bash
-   ./qval --config config.yaml --platform 0 --device 1
-   ```
-
-### Sample Count Optimization
-
-- **Start small** (1K-10K samples) for testing
-- **Scale up gradually** based on problem complexity
-- **Monitor GPU memory usage** for very large sample counts
-- **Consider batch processing** for memory-constrained scenarios
-
-### Precision Selection
-
-```bash
-# Default float32 (recommended)
-./qval --config config.yaml
-
-# Double precision (if supported)
-./qval --config config.yaml --precision double
-
-# Half precision (faster, less accurate)  
-./qval --config config.yaml --precision half
-```
-
-### Integer Compute Mode
-
-```bash
-# Integer arithmetic
-./qval --config config.yaml --compute int --int-precision int32
-```
-
-**Note**: Limited to basic arithmetic operations (+, -, *, /, %, abs, min, max).
-
-## Troubleshooting
-
-### Common Issues
-
-#### GPU Not Found
-```
-Error: No OpenCL devices found
-```
-**Solution**: Install GPU drivers, check OpenCL runtime installation.
-
-#### Out of Memory
-```
-Error: CL_MEM_OBJECT_ALLOCATION_FAILURE
-```
-**Solution**: Reduce sample count, use smaller batch sizes, or switch to CPU device.
-
-#### Kernel Build Failure
-```
-Error: OpenCL kernel compilation failed
-```
-**Solution**: Check expression syntax, review `build_error.log` in output directory.
-
-#### Precision Not Supported
-```
-Warning: Double precision not supported, falling back to float32
-```
-**Solution**: Use `--no-fallback` to enforce strict precision, or accept fallback.
-
-### Performance Issues
-
-#### Slow Execution
-- Check if running on CPU instead of GPU
-- Verify sufficient GPU memory available
-- Reduce expression complexity
-- Use appropriate sampler for problem size
-
-#### Poor Optimization Results  
-- Increase iteration count for CEM/DE
-- Adjust parameter ranges to cover feasible space
-- Try different sampling strategies
-- Verify objective function correctness
-
-### Debug Options
-
-```bash
-# Verbose output with device details
-./qval --config config.yaml --verbose
-
-# Quiet output for batch processing
-./qval --config config.yaml --quiet
-
-# Performance profiling
-./qval --config config.yaml --perf --perf-txt debug.log
-```
-
-### Getting Help
-
-- **Check example configurations** in `config/example/` and `config/tutorial/`
-- **Run test suite** to verify installation: `./qval --run-suite config/test`
-- **Review manual sections** for specific features
-- **Examine generated `build_error.log`** for compilation issues
+Examples:
+- macOS/Linux (quiet run):
+  ./qval -cf config/test/dists/normal.yaml --quiet
+- macOS/Linux (verbose device details including OpenCL extensions):
+  ./qval -cf config/test/dists/normal.yaml --verbose
+- Windows (PowerShell):
+  .\\qval.exe -cf config\\test\\dists\\normal.yaml --quiet
+  .\\qval.exe -cf config\\test\\dists\\normal.yaml --verbose
 

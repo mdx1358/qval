@@ -1,4 +1,4 @@
-# GitHub Setup Files for QVAL
+# GitHub Setup Files for QVAL v0.1.1
 
 This directory contains all the files needed to set up QVAL on GitHub with a professional repository page and GitHub Pages website.
 
@@ -79,8 +79,33 @@ Your site will be available at:
 - Project site: `https://yourusername.github.io/qval` (if baseurl: "/qval")
 - User site: `https://yourusername.github.io` (if baseurl: "")
 
-### 4. Optional: Set Up Automated Releases
+### 4. Release Preparation
 
+#### Manual Release Preparation
+Use the included Python script to prepare platform-specific release zips:
+
+```bash
+# Prepare both macOS and Windows releases
+python3 prepare_release.py --version 1.0.0
+
+# Prepare only macOS release
+python3 prepare_release.py --platform mac --version 1.0.0
+
+# Prepare only Windows release  
+python3 prepare_release.py --platform win --version 1.0.0
+```
+
+The script creates clean, minimal distributions containing:
+- All configurations and examples (no `/bin` wrapper)
+- Platform-specific README (renamed to `README.txt`)
+- Platform-specific scripts (`.sh` for macOS, `.bat` for Windows)
+- Binary executable (`qval` or `qval.exe`)
+- `manual.md` from the doc folder
+- Quick sanity check scripts in root: `run_basic_example` and `run_gpu_verification`
+- Comprehensive testing scripts in `util/` directory
+- Removes generated output files and unnecessary documentation
+
+#### Automated Releases (Optional)
 The included GitHub Actions workflow will automatically build and release binaries when you push version tags.
 
 To use it:
