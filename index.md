@@ -19,8 +19,8 @@ title: Home
           <a href="https://github.com/mdx1358/qval/releases/latest/download/qval-macos-arm64.zip" class="download-btn download-btn-mac" data-track="download-mac">
             <span class="download-icon">⬇</span> Download QVAL for macOS
           </a>
-          <a href="#" class="download-btn download-btn-win" data-track="download-win" style="opacity: 0.6; cursor: not-allowed;">
-            <span class="download-icon">⬇</span> Windows (Coming Soon)
+          <a href="https://github.com/mdx1358/qval/releases/latest/download/qval-windows-x64.zip" class="download-btn download-btn-win" data-track="download-win">
+            <span class="download-icon">⬇</span> Download QVAL for Windows
           </a>
         </div>
         <div class="download-buttons" style="margin-top: 0.75rem;">
@@ -106,8 +106,8 @@ title: Home
               <summary>Show commands</summary>
               <pre class="code-clip"><code class="language-bash"># macOS/Linux
 ./run_basic_example.sh
-# Windows
-run_basic_example.bat</code></pre>
+# Windows (PowerShell)
+.\run_basic_example.ps1</code></pre>
             </details>
           </div>
           <div class="step-card">
